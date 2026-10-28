@@ -32,6 +32,19 @@ class AuthScenarios(fakes.ScenarioTest):
                 call["headers"],
                 {"Authorization": "Bearer tok-op-abc123", "Accept": "application/json"},
             )
+            # Regression guard: global flags must also work BEFORE the subcommand
+            # (subparser defaults must not clobber top-level-parsed values).
+            transport2 = fakes.FakeTransport(
+                default=fakes.FakeResponse(body={"code": 200, "data": {"data": [], "total": 0}})
+            )
+            code2, out2, err2 = self.run_cli(
+                ["--config", cfg, "payment", "list-pending", "--month", "2026-10"],
+                transport=transport2,
+                op_runner=fakes.FakeOpRunner(token="tok-op-abc123"),
+            )
+            self.assertEqual(code2, 0, err2)
+            self.assertEqual(transport2.calls[0]["headers"]["Authorization"],
+                             "Bearer tok-op-abc123")
 
     def test_refuses_to_run_when_op_read_fails(self):
         # Scenario: refuses to run when op read fails

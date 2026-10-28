@@ -21,10 +21,14 @@ from .feishu import Feishu
 
 
 def build_parser():
+    # SUPPRESS defaults: without them the subparsers' defaults would clobber
+    # values parsed at the top level (`cosyflo --config X payment ...`).
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--config", help="path to config JSON (default ~/.cosyflo-cli/config.json)")
-    common.add_argument("--endpoint", help="override the API base URL")
-    common.add_argument("--token-source", choices=["op", "env"],
+    common.add_argument("--config", default=argparse.SUPPRESS,
+                        help="path to config JSON (default ~/.cosyflo-cli/config.json)")
+    common.add_argument("--endpoint", default=argparse.SUPPRESS,
+                        help="override the API base URL")
+    common.add_argument("--token-source", choices=["op", "env"], default=argparse.SUPPRESS,
                         help="credential source override (op: 1Password via `op read`; "
                              "env: COSYFLO_API_TOKEN — dev/staging only)")
 
@@ -94,10 +98,10 @@ def main(argv=None, transport=None, op_runner=None, feishu=None,
     err = stderr if stderr is not None else sys.stderr
 
     try:
-        config = load_config(args.config)
-        if args.endpoint:
+        config = load_config(getattr(args, "config", None))
+        if getattr(args, "endpoint", None):
             config["base_url"] = args.endpoint
-        if args.token_source:
+        if getattr(args, "token_source", None):
             config["token"]["source"] = args.token_source
 
         ctx = {
