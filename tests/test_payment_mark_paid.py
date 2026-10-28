@@ -43,7 +43,7 @@ class MarkPaidScenarios(fakes.ScenarioTest):
         # Given valid tenancy_id, month, amount in pounds >= 0 with <= 2 dp -> POST
         # payment_rent/create_payment with amount in POUNDS, and prints the confirmation.
         # Also carries the §8 money-function contract (single Decimal-owned conversion).
-        from cosyflo_cli.money import pounds_to_pence, pence_to_pounds
+        from cosyflo_cli.money import pence_to_pounds, pounds_to_pence
         self.assertEqual(pounds_to_pence("0"), 0)
         self.assertEqual(pence_to_pounds(1), Decimal("0.01"))
         self.assertEqual(pounds_to_pence("0.01"), 1)

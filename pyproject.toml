@@ -14,3 +14,10 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["cosyflo_cli"]
+
+[tool.ruff.lint]
+# BLE001: transport/network calls fail in arbitrary ways and map to typed
+#         CLI errors at the boundary — blind catch + mapping is the design.
+# RUF059: test runners unpack (code, out, err) tuples uniformly; unused
+#         members are deliberate.
+ignore = ["BLE001", "RUF059"]

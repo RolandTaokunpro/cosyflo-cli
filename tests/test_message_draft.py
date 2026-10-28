@@ -29,7 +29,8 @@ class MessageDraftScenarios(fakes.ScenarioTest):
                 [*argv, "--output", outpath], transport=transport, op_runner=op
             )
             self.assertEqual(code, 0, err)
-            rendered = open(outpath).read()
+            with open(outpath) as f:
+                rendered = f.read()
             self.assertIn("Dear Alice,", rendered)
             self.assertIn("Tenancy T-5", rendered)
             self.assertIn("£125.00", rendered)

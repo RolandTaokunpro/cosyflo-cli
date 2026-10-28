@@ -1,0 +1,16 @@
+{
+  "base_url": "https://cosyflo-api.onrender.com/api/v1",
+  "token": {
+    "source": "op",
+    "op_ref": "op://Cosyflo/cosyflo-service-account/api_token"
+  },
+  "audit": {
+    "path": "~/.cosyflo-cli/audit.log"
+  },
+  "feishu": {
+    "webhook_url": null,
+    "approval_poll_url": null,
+    "approval_timeout_seconds": 300
+  },
+  "templates_dir": null
+}

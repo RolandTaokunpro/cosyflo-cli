@@ -1,5 +1,4 @@
 """Gherkin: Feature Audit (cross-cutting) (3 scenarios)."""
-import json
 import os
 import tempfile
 import unittest
@@ -95,7 +94,10 @@ class AuditScenarios(fakes.ScenarioTest):
             self.assertEqual(line["status"], "error")
             self.assertEqual(line["error_code"], 400)
             self.assertEqual(line["command"], "payment_mark_paid")
-            raw = open(cfg.replace("config.json", "audit.log")).read()
+            audit_path = cfg.replace("config.json", "audit.log")
+            raw = ""
+            with open(audit_path) as f:
+                raw = f.read()
             self.assertNotIn(self.TOKEN, raw, "credential must never reach the audit log")
 
 

@@ -1,0 +1,9 @@
+Dear {tenant_name},
+
+Our records show tenancy {tenancy_id} is £{amount_short} short of the rent due for {month}.
+
+Please arrange payment at your earliest convenience, or reply to this message if
+you have already paid or wish to discuss the balance.
+
+Kind regards,
+Cosyflo Property Management

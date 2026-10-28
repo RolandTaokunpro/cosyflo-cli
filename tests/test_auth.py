@@ -1,5 +1,4 @@
 """Gherkin: Feature Auth — service-account token (3 scenarios)."""
-import json
 import os
 import tempfile
 import unittest
@@ -94,9 +93,11 @@ class AuthScenarios(fakes.ScenarioTest):
                 transport=bad,
             )
             self.assertEqual(code2, 4)
-            audit_text = open(cfg.replace("config.json", "audit.log")).read() if os.path.exists(
-                cfg.replace("config.json", "audit.log")
-            ) else ""
+            audit_path = cfg.replace("config.json", "audit.log")
+            audit_text = ""
+            if os.path.exists(audit_path):
+                with open(audit_path) as f:
+                    audit_text = f.read()
             for stream in (out + err + out2 + err2 + audit_text):
                 self.assertNotIn(self.TOKEN, stream, "token material leaked")
 
