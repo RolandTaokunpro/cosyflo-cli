@@ -74,6 +74,33 @@ class ListPendingScenarios(fakes.ScenarioTest):
             self.assertIn("YYYY-MM", err)
             self.assertEqual(transport.calls, [], "no REST call may leave the CLI")
 
+    def test_conversion_routes_through_money_pounds_to_pence(self):
+        # SR5 / DoD#3: the pounds->pence conversion is owned by one tested
+        # function. list-pending must call money.pounds_to_pence for
+        # monthly_rental — never an ad-hoc inline *100.
+        from unittest import mock
+
+        import cosyflo_cli.commands.payment as payment_mod
+        from cosyflo_cli.money import pounds_to_pence as real_p2p
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = fakes.write_config(tmp)
+            with mock.patch.object(
+                payment_mod, "pounds_to_pence",
+                side_effect=lambda v: real_p2p(v),
+            ) as conv:
+                code, out, err = self.run_cli(
+                    ["payment", "list-pending", "--month", "2026-10", "--config", cfg],
+                    transport=fakes.FakeTransport(default=fakes.FakeResponse(body=MONTH_PAGE)),
+                )
+            self.assertEqual(code, 0, err)
+            self.assertEqual(
+                conv.call_args_list, [mock.call("825.0"), mock.call("1200.0")],
+                "monthly_rental (pounds) must go through money.pounds_to_pence",
+            )
+            self.assertIn("£825.00", out)
+            self.assertIn("£125.00", out)  # behaviour unchanged: 82500 - 70000
+
     def test_empty_result_is_explicit(self):
         # Scenario: empty result is explicit
         # Given a month with no arrears -> prints '0 tenancies in arrears', not a blank screen.
