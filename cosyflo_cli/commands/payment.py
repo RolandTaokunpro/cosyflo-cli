@@ -8,7 +8,13 @@ import datetime
 from .. import gate
 from ..client import resolve_operator
 from ..errors import ValidationError
-from ..money import format_pounds, parse_amount, pence_to_pounds, validate_month
+from ..money import (
+    format_pounds,
+    parse_amount,
+    pence_to_pounds,
+    pounds_to_pence,
+    validate_month,
+)
 
 
 def _utcnow_iso():
@@ -47,7 +53,7 @@ def cmd_list_pending(args, ctx):
     for row in rows:
         tenancy_id = str(row.get("tenancy_id") or "")
         paid_pence = int(row.get("paid_amount") or 0)
-        monthly_pence = int(parse_amount(str(row.get("monthly_rental") or "0")) * 100)
+        monthly_pence = pounds_to_pence(str(row.get("monthly_rental") or "0"))
         shortfall_pence = monthly_pence - paid_pence
         out.write(
             f"{tenancy_id:<38} {_masked_name(row.get('headTenant')):<20} "
